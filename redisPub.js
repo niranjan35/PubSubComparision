@@ -1,25 +1,61 @@
 var redis = require("redis");
-var os = require("os");
-var osUtils = require('os-utils');
+var fs = require("fs");
+
+const os = require('os');
+const NUMBER_OF_CPUS = os.cpus().length;
+let startTime  = process.hrtime()
+let startUsage = process.cpuUsage()
+
+var time = 0;
+var limit = 100000;
 
 var pub = redis.createClient();
 
-var time = 0;
-var limit = 50;
+fs.stat(__dirname+"/redisPubStats.txt", function (err, stats) {
+  console.log("checking if the write file exists and status is : "+stats);
+  if (err) {
+      return console.log("file doesnt exists prior starting the program, thus creating it !!!");
+  }
+  fs.unlink(__dirname+"/redisPubStats.txt",function(err){
+       if(err){
+         return console.log(err);
+       }
+       console.log("file exists prior starting the program, so deleted");
+  });
+});
 
-var timer = setInterval(function(){
+var timer = setInterval(() => {
   time+=1;
   if(time>=limit){
     clearInterval(timer);
   }
-  var channel = "channel"+time;
-  var message = "message"+time;
-  pub.publish(channel,message);
-},1000);
+  var now = Date.now()
+  var channel = "channel"+time; //publish
+  var message = "message"+time; //publish
+  pub.publish(channel,message); //publish
 
-console.log("os.totalmem = "+os.totalmem());
-console.log("os.freemem = "+os.freemem());
+  const newTime = process.hrtime();
+  const newUsage = process.cpuUsage();
+  const elapTime = process.hrtime(startTime)
+  const elapUsage = process.cpuUsage(startUsage)
+  startUsage = newUsage;
+  startTime = newTime;
 
-osUtils.cpuUsage(function(v){
-    console.log( 'CPU Usage (%): ' + v );
-});
+
+  const elapTimeMS = hrtimeToMS(elapTime)
+
+  const elapUserMS = elapUsage.user / 1000; // microseconds to milliseconds
+  const elapSystMS = elapUsage.system / 1000;
+  const cpuPercent = (100 * (elapUserMS + elapSystMS) / elapTimeMS / NUMBER_OF_CPUS).toFixed(1) + '%';
+
+  // console.log('elapsed time ms:  ', elapTimeMS);
+  // console.log('elapsed user ms:  ', elapUserMS);
+  // console.log('elapsed system ms:', elapSystMS);
+  // console.log('cpu percent:      ', cpuPercent, '\n');
+
+  fs.appendFile(__dirname+"/redisPubStats.txt",new Buffer(cpuPercent+"\n"));
+}, 50);
+
+function hrtimeToMS (hrtime) {
+  return hrtime[0] * 1000 + hrtime[1] / 1000000;
+}
