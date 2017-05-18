@@ -7,18 +7,18 @@ let startTime  = process.hrtime()
 let startUsage = process.cpuUsage()
 
 var time = 0;
-var limit = 120;
+var limit = 100000;
 
 fs.stat(__dirname+"/RabbitMQcpuStats.txt", function (err, stats) {
   console.log("checking if the write file exists and status is : "+stats);
   if (err) {
-      return console.error(err);
+      return console.log("file doesnt exists prior starting the program, thus creating it !!!");
   }
   fs.unlink(__dirname+"/RabbitMQcpuStats.txt",function(err){
        if(err){
          return console.log(err);
        }
-       console.log('file deleted successfully');
+       console.log("file exists prior starting the program, so deleted");
   });
 });
 
@@ -28,6 +28,7 @@ var timer = setInterval(() => {
     clearInterval(timer);
   }
   var now = Date.now()
+  //RabbitMQ
   amqp.connect("amqp://localhost",function(err,conn){
     conn.createChannel(function(err,ch){
       var q = "queue_name";
@@ -37,6 +38,7 @@ var timer = setInterval(() => {
       // console.log("time = "+time);
     });
   });
+  //RabbitMQ
 
   const newTime = process.hrtime();
   const newUsage = process.cpuUsage();
