@@ -3,10 +3,11 @@ var os = require("os");
 var osUtils = require('os-utils');
 
 var time = 0;
+var limit = 10;
 
 var timer = setInterval(function(){
   time+=1;
-  if(time>=10){
+  if(time>=limit){
     clearInterval(timer);
   }
   amqp.connect("amqp://localhost",function(err,conn){
