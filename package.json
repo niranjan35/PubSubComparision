@@ -1,0 +1,22 @@
+{
+  "name": "niranjan",
+  "version": "1.0.0",
+  "description": "A comparision between RAM usages of RabbitMQ and Redis pub/sub",
+  "main": "trafficRabbitMQsend.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/niranjan35/PubSubComparision.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/niranjan35/PubSubComparision/issues"
+  },
+  "homepage": "https://github.com/niranjan35/PubSubComparision#readme",
+  "dependencies": {
+    "amqplib": "^0.5.1"
+  }
+}
