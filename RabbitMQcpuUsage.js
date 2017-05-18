@@ -1,11 +1,26 @@
 var amqp = require("amqplib/callback_api");
+var fs = require("fs");
+
 const os = require('os');
 const NUMBER_OF_CPUS = os.cpus().length;
 let startTime  = process.hrtime()
 let startUsage = process.cpuUsage()
 
 var time = 0;
-var limit = 10;
+var limit = 120;
+
+fs.stat(__dirname+"/RabbitMQcpuStats.txt", function (err, stats) {
+  console.log("checking if the write file exists and status is : "+stats);
+  if (err) {
+      return console.error(err);
+  }
+  fs.unlink(__dirname+"/RabbitMQcpuStats.txt",function(err){
+       if(err){
+         return console.log(err);
+       }
+       console.log('file deleted successfully');
+  });
+});
 
 var timer = setInterval(() => {
   time+=1;
@@ -35,15 +50,16 @@ var timer = setInterval(() => {
 
   const elapUserMS = elapUsage.user / 1000; // microseconds to milliseconds
   const elapSystMS = elapUsage.system / 1000;
-  const cpuPercent = (100 * (elapUserMS + elapSystMS) / elapTimeMS / NUMBER_OF_CPUS).toFixed(1) + '%'
+  const cpuPercent = (100 * (elapUserMS + elapSystMS) / elapTimeMS / NUMBER_OF_CPUS).toFixed(1) + '%';
 
-  console.log('elapsed time ms:  ', elapTimeMS)
-  console.log('elapsed user ms:  ', elapUserMS)
-  console.log('elapsed system ms:', elapSystMS)
-  console.log('cpu percent:      ', cpuPercent, '\n')
+  // console.log('elapsed time ms:  ', elapTimeMS);
+  // console.log('elapsed user ms:  ', elapUserMS);
+  // console.log('elapsed system ms:', elapSystMS);
+  // console.log('cpu percent:      ', cpuPercent, '\n');
 
-}, 1000);
+  fs.appendFile(__dirname+"/RabbitMQcpuStats.txt",new Buffer(cpuPercent+"\n"));
+}, 50);
 
 function hrtimeToMS (hrtime) {
-  return hrtime[0] * 1000 + hrtime[1] / 1000000
+  return hrtime[0] * 1000 + hrtime[1] / 1000000;
 }
