@@ -1,4 +1,6 @@
 var amqp = require("amqplib/callback_api");
+var os = require("os");
+var osUtils = require('os-utils');
 
 var time = 0;
 
@@ -12,8 +14,15 @@ var timer = setInterval(function(){
       var q = "queue_name";
       var msg = "this is the message string!!!";
       ch.assertQueue(q,{durable: false});
-      ch.sendToQueue(q,new Buffer(msg));
+      ch.sendToQueue(q,new Buffer(msg),{persistent: false});
       // console.log("time = "+time);
     });
   });
 },1000);
+
+console.log("os.totalmem = "+os.totalmem());
+console.log("os.freemem = "+os.freemem());
+
+osUtils.cpuUsage(function(v){
+    console.log( 'CPU Usage (%): ' + v );
+});

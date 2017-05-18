@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/niranjan35/PubSubComparision#readme",
   "dependencies": {
-    "amqplib": "^0.5.1"
+    "amqplib": "^0.5.1",
+    "os-utils": "0.0.14"
   }
 }
