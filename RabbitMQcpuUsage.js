@@ -8,7 +8,6 @@ var time = 0;
 var limit = 10;
 
 var timer = setInterval(() => {
-  // spin the CPU for 500 milliseconds
   time+=1;
   if(time>=limit){
     clearInterval(timer);
