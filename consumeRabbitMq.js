@@ -10,12 +10,12 @@ var loop_count = 0;
 var lim_loop = 10000;
 var cycle_count = 1;
 
-fs.stat(__dirname+"/RabbitMQcpuStats.txt", function (err, stats) {
+fs.stat(__dirname+"/comsumeCpuStats.txt", function (err, stats) {
   console.log("checking if the write file exists and status is : "+stats);
   if (err) {
       return console.log("file doesnt exists prior starting the program, thus creating it !!!");
   }
-  fs.unlink(__dirname+"/RabbitMQcpuStats.txt",function(err){
+  fs.unlink(__dirname+"/comsumeCpuStats.txt",function(err){
        if(err){
          return console.log(err);
        }
@@ -58,7 +58,7 @@ setTimeout(function(){
         const elapSystMS = elapUsage.system / 1000;
         const cpuPercent = (100 * (elapUserMS + elapSystMS) / elapTimeMS / NUMBER_OF_CPUS).toFixed(1) + '%';
 
-        fs.appendFile(__dirname+"/RabbitMQcpuStats.txt",new Buffer(cpuPercent.substr(0,cpuPercent.length-1)+","));
+        fs.appendFile(__dirname+"/comsumeCpuStats.txt",new Buffer(cpuPercent.substr(0,cpuPercent.length-1)+","));
 
         //clear interval if loop count is more
         loop_count+=1;
