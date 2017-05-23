@@ -4,8 +4,8 @@ var util = require("util");
 
 const os = require('os');
 const NUMBER_OF_CPUS = os.cpus().length;
-let startTime  = process.hrtime()
-let startUsage = process.cpuUsage()
+let startTime  = process.hrtime();
+let startUsage = process.cpuUsage();
 
 var time = 0;
 var limit = 10000;
