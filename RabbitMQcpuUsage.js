@@ -8,14 +8,13 @@ let startUsage = process.cpuUsage()
 
 var loop_count = 0;
 var lim_loop = 10000;
-var cycle_count = 1;
 
-fs.stat(__dirname+"/RabbitMQcpuStats.txt", function (err, stats) {
+fs.stat(__dirname+"/RabbitmqCPUstats.txt", function (err, stats) {
   console.log("checking if the write file exists and status is : "+stats);
   if (err) {
       return console.log("file doesnt exists prior starting the program, thus creating it !!!");
   }
-  fs.unlink(__dirname+"/RabbitMQcpuStats.txt",function(err){
+  fs.unlink(__dirname+"/RabbitmqCPUstats.txt",function(err){
        if(err){
          return console.log(err);
        }
@@ -27,7 +26,7 @@ setTimeout(function(){
 
   amqp.connect("amqp://localhost",function(err,conn){
     if(err){
-      console.log("error in creatin conn object");
+      console.log("error in creating conn object");
     }
     var timer = setInterval(function(){
       var now = Date.now();
@@ -36,27 +35,35 @@ setTimeout(function(){
         if(err){
           console.log("error in createChannel method ----");
         }
-        var q = "queue_name "+loop_count.toString();
-        var msg = "Message";
-        ch.assertQueue(q,{durable: true});
-        ch.sendToQueue(q,new Buffer(msg),{persistent: true});
+        function startQueuing(){
+          var q = "queue_name "+loop_count.toString();
+          var msg = "Message";
+          ch.assertQueue(q,{durable: false});
+          ch.sendToQueue(q,new Buffer(msg),{persistent: false});
 
-        //cpu calculations
-        const newTime = process.hrtime();
-        const newUsage = process.cpuUsage();
-        const elapTime = process.hrtime(startTime)
-        const elapUsage = process.cpuUsage(startUsage)
-        startUsage = newUsage;
-        startTime = newTime;
+          performCpuCalc();
+        }
+
+        function performCpuCalc(){
+          //cpu calculations
+          const newTime = process.hrtime();
+          const newUsage = process.cpuUsage();
+          const elapTime = process.hrtime(startTime)
+          const elapUsage = process.cpuUsage(startUsage)
+          startUsage = newUsage;
+          startTime = newTime;
 
 
-        const elapTimeMS = hrtimeToMS(elapTime)
+          const elapTimeMS = hrtimeToMS(elapTime)
 
-        const elapUserMS = elapUsage.user / 1000; // microseconds to milliseconds
-        const elapSystMS = elapUsage.system / 1000;
-        const cpuPercent = (100 * (elapUserMS + elapSystMS) / elapTimeMS / NUMBER_OF_CPUS).toFixed(1) + '%';
+          const elapUserMS = elapUsage.user / 1000; // microseconds to milliseconds
+          const elapSystMS = elapUsage.system / 1000;
+          const cpuPercent = (100 * (elapUserMS + elapSystMS) / elapTimeMS / NUMBER_OF_CPUS).toFixed(1) + '%';
 
-        fs.appendFile(__dirname+"/RabbitMQcpuStats.txt",new Buffer(cpuPercent.substr(0,cpuPercent.length-1)+","));
+          fs.appendFile(__dirname+"/RabbitmqCPUstats.txt",new Buffer(cpuPercent.substr(0,cpuPercent.length-1)+","));
+        }
+
+        startQueuing();
 
         //clear interval if loop count is more
         loop_count+=1;
