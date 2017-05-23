@@ -4,8 +4,8 @@ var util = require("util");
 
 const os = require('os');
 const NUMBER_OF_CPUS = os.cpus().length;
-let startTime  = process.hrtime()
-let startUsage = process.cpuUsage()
+let startTime  = process.hrtime();
+let startUsage = process.cpuUsage();
 
 var time = 0;
 var limit = 100000;
@@ -33,7 +33,6 @@ setTimeout(function(){
       flag=1;
       clearInterval(timer);
     }
-    var now = Date.now();
     var channel = "channel "+time; //publish
     var message = "message "+time; //publish
     pub.publish(channel,message); //publish
@@ -54,7 +53,3 @@ var ramCheck = setInterval(function(){
   }
   initializeMemUsed();
 },2000);
-
-function hrtimeToMS (hrtime) {
-  return hrtime[0] * 1000 + hrtime[1] / 1000000;
-}
